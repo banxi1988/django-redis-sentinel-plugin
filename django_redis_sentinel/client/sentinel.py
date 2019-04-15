@@ -66,7 +66,8 @@ class SentinelClient(DefaultClient):
         # Create connection factory for Sentinels
         self.connection_factory = pool.get_connection_factory(options=self._options)
 
-    def get_client(self, write=True, force_slave=False):
+
+    def get_client(self, write=True, tried=(), show_index=False, force_slave=False,**kwargs):
         """
         Method used for obtain a raw redis client.
 
@@ -77,10 +78,11 @@ class SentinelClient(DefaultClient):
         If read always looks for a slave (round-robin algorithm, with fallback to master if none available)
         If write then it looks for master
         """
-        if write:
-            return self.connect(master=True)
+        client =  self.connect(master=write)
+        if show_index:
+            return client,0
         else:
-            return self.connect(master=False, force_slave=force_slave)
+            return client
 
     def connect(self, master=True, force_slave=False):
         """

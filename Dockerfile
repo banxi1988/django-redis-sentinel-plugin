@@ -1,17 +1,9 @@
-FROM ubuntu:16.04
-
-MAINTAINER danigosa <danigosa@gmail.com>
-
-RUN apt-get update && apt-get install -y -qq \
-    python-pip \
-    openssh-server
-
-RUN pip install --upgrade pip
-
-RUN pip install 'django-redis>=4.5.0'
-RUN pip install hiredis mock msgpack-python fakeredis
-
+FROM python:3.6-stretch
+LABEL maintainer=banxi1988 
+RUN apt-get update && apt-get install -y -qq  openssh-server
 RUN mkdir /django-redis-sentinel
+COPY requirements.txt /django-redis-sentinel/requirements.txt
+RUN pip install -r requirements.txt
 
 COPY . /django-redis-sentinel
 WORKDIR /django-redis-sentinel
