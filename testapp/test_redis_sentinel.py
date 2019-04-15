@@ -163,5 +163,16 @@ def test_master_slave_switching(cache:RedisSentinelCache):
   master2_slaves = [slave for key,slave in master2_replication1.items() if key.startswith("slave")]
   assert master1_slaves != master2_slaves
 
+  # 关闭当前主 master 等待被动切换
+  master2_server = master2.info('server')
+  master2_process_id = master2_server['process_id']
+  assert master2_process_id
+  import os,signal
+  os.kill(master2_process_id,signal.SIGTERM)
+  time.sleep(15)
+  master3 : StrictRedis = client.get_client(write=True)
+  master3_replication1 = master3.info('replication')
+  master3_slaves = [slave for key,slave in master3_replication1.items() if key.startswith("slave")]
 
+  assert master2_slaves != master3_slaves
 
