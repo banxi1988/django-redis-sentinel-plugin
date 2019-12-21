@@ -1,4 +1,4 @@
-FROM redis:5-alpine
+FROM redis:5.0.4-alpine
 LABEL maintainer=banxi1988@gmail.com
 EXPOSE 26379
 ADD sentinel.conf /etc/redis/sentinel.conf

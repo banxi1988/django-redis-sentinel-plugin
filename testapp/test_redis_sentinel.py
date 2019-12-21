@@ -5,27 +5,17 @@ import time
 from django_redis.cache import RedisCache
 from redis import StrictRedis
 
-from django_redis_sentinel.cache import RedisSentinelCache
-from django_redis_sentinel.client import SentinelClient
-from django_redis_sentinel.pool import SentinelConnectionFactory
-
+from django_redis_sentinel_plugin.cache import RedisSentinelCache
+from django_redis_sentinel_plugin.client import SentinelClient
+from django_redis_sentinel_plugin.pool import SentinelConnectionFactory
+from django.conf import settings
 __author__ = '代码会说话'
 
 import pytest
 from redis.sentinel import Sentinel
-SENTINEL1_HOST = os.getenv('SENTINEL1_HOST','127.0.0.1')
-SENTINEL2_HOST = os.getenv('SENTINEL2_HOST','127.0.0.1')
-SENTINEL3_HOST = os.getenv('SENTINEL3_HOST','127.0.0.1')
 
-SENTINEL1_PORT = os.getenv('SENTINEL1_PORT','26380')
-SENTINEL2_PORT = os.getenv('SENTINEL2_PORT','26381')
-SENTINEL3_PORT = os.getenv('SENTINEL3_PORT','26382')
 
-sentinel = Sentinel([
-  (SENTINEL1_HOST, SENTINEL1_PORT),
-  (SENTINEL2_HOST, SENTINEL2_PORT),
-  (SENTINEL3_HOST, SENTINEL3_PORT),
-], socket_timeout=0.1)
+sentinel = Sentinel(settings.SENTINEL_LOCATIONS, socket_timeout=0.1)
 
 MASTER_NAME = 'rmaster'
 def test_redis_basic_sentinel_function():

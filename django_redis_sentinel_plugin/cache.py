@@ -1,5 +1,5 @@
+from django.utils.module_loading import import_string
 from django_redis.cache import RedisCache, DJANGO_REDIS_IGNORE_EXCEPTIONS
-from django_redis.util import load_class
 
 
 class RedisSentinelCache(RedisCache):
@@ -12,8 +12,8 @@ class RedisSentinelCache(RedisCache):
         self._params = params
 
         options = params.get("OPTIONS", {})
-        self._client_cls = options.get("CLIENT_CLASS", "django_redis_sentinel.client.SentinelClient")
-        self._client_cls = load_class(self._client_cls)
+        self._client_cls = options.get("CLIENT_CLASS", "django_redis_sentinel_plugin.client.SentinelClient")
+        self._client_cls = import_string(self._client_cls)
         self._client = None
 
         self._ignore_exceptions = options.get("IGNORE_EXCEPTIONS", DJANGO_REDIS_IGNORE_EXCEPTIONS)

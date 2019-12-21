@@ -1,6 +1,6 @@
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
-from django_redis import util as djredis_util
+from django.utils.module_loading import import_string
 from django_redis.pool import ConnectionFactory
 from redis.sentinel import Sentinel
 
@@ -8,9 +8,9 @@ from redis.sentinel import Sentinel
 def get_connection_factory(path=None, options=None):
     if path is None:
         path = getattr(settings, "DJANGO_REDIS_CONNECTION_FACTORY",
-                       "django_redis_sentinel.pool.SentinelConnectionFactory")
+                       "django_redis_sentinel_plugin.pool.SentinelConnectionFactory")
 
-    cls = djredis_util.load_class(path)
+    cls = import_string(path)
     return cls(options or {})
 
 
@@ -22,12 +22,12 @@ class SentinelConnectionFactory(ConnectionFactory):
 
         pool_cls_path = options.get("CONNECTION_POOL_CLASS",
                                     "redis.sentinel.SentinelConnectionPool")
-        self.pool_cls = djredis_util.load_class(pool_cls_path)
+        self.pool_cls = import_string(pool_cls_path)
         self.pool_cls_kwargs = options.get("CONNECTION_POOL_KWARGS", {})
 
         redis_client_cls_path = options.get("REDIS_CLIENT_CLASS",
                                             "redis.client.StrictRedis")
-        self.redis_client_cls = djredis_util.load_class(redis_client_cls_path)
+        self.redis_client_cls = import_string(redis_client_cls_path)
         self.redis_client_cls_kwargs = options.get("REDIS_CLIENT_KWARGS", {})
 
         self.service_name = options.get("SENTINEL_SERVICE_NAME", None)

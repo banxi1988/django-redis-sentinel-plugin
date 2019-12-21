@@ -1,23 +1,10 @@
-# -*- coding: utf-8 -*-
-
-from __future__ import absolute_import, unicode_literals
-
-import socket
+# coding: utf-8
 
 from django.core.cache.backends.base import get_key_func
 from django.core.exceptions import ImproperlyConfigured
+from django.utils.module_loading import import_string
 from django_redis.client.default import DefaultClient
-from django_redis.util import load_class
-from redis.exceptions import ConnectionError
-
-from django_redis_sentinel import pool
-
-try:
-    from redis.exceptions import TimeoutError, ResponseError
-
-    _main_exceptions = (TimeoutError, ResponseError, ConnectionError, socket.timeout)
-except ImportError:
-    _main_exceptions = (ConnectionError, socket.timeout)
+from django_redis_sentinel_plugin import pool
 
 
 class SentinelClient(DefaultClient):
@@ -53,10 +40,10 @@ class SentinelClient(DefaultClient):
         self._options = params.get("OPTIONS", {})
 
         serializer_path = self._options.get("SERIALIZER", "django_redis.serializers.pickle.PickleSerializer")
-        serializer_cls = load_class(serializer_path)
+        serializer_cls = import_string(serializer_path)
 
         compressor_path = self._options.get("COMPRESSOR", "django_redis.compressors.identity.IdentityCompressor")
-        compressor_cls = load_class(compressor_path)
+        compressor_cls = import_string(compressor_path)
 
         self._serializer = serializer_cls(options=self._options)
         self._compressor = compressor_cls(options=self._options)
