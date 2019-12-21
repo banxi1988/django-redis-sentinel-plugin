@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "django-redis-sentinel-plugin"
-version = "0.1.0"
-description = "Django Redis Client that supports Sentinel Cluster HA"
+version = "1.0.0"
+description = "django-redis plugin that supports Sentinel Cluster HA"
 authors = ["banxi1988 <banxi1988@gmail.com>"]
 license = "MIT"
 readme = "README.md"
